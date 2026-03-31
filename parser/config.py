@@ -1,6 +1,5 @@
 from src.zones.Zone import Zone
 
-
 def read_metadata(line):
     if '[' not in line or ']' not in line:
         return {}
@@ -38,40 +37,38 @@ def process_zones(line):
     return Zone(name, x, y, type, color, drone_capacity, link_capacity)
 
 
-def get_config(map):
-    result = {
-        "nb_drones": 0,
-        "zones": []
-    }
-    with open(map, "r") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
+def get_config(map_path):
+    result = {"nb_drones": 0, "zones": []}
+    # Создаем словарь для быстрого поиска: "имя": объект_зоны
+    zones_by_name = {}
 
-            if line.startswith("nb_drone"):
-                result["nb_drones"] = int(line.split(":", 1)[1].strip())
-            
-            elif "hub" in line:
-                result["zones"].append(process_zones(line))
-            elif line.startswith("connection"):
-                parts = line.split(":", 1)
-                if len(parts) < 2: continue
-                
-                data = parts[1].strip()
-                
+    with open(map_path, "r") as f:
+        lines = f.readlines()
 
-                names_part = data.split("[")[0].strip()
-                node_names = names_part.split("-")
-                if len(node_names) < 2: continue
-                n1, n2 = node_names[0].strip(), node_names[1].strip()
-                link_meta = ""
-                if "[" in data and "]" in data:
-                    link_meta = data.split("[")[1].split("]")[0]
+    # ПЕРВЫЙ ПРОХОД: Создаем все объекты зон
+    for line in lines:
+        line = line.strip()
+        if "hub" in line:
+            zone_obj = process_zones(line)
+            result["zones"].append(zone_obj)
+            zones_by_name[zone_obj.name] = zone_obj # Запоминаем объект
+        elif line.startswith("nb_drone"):
+            result["nb_drones"] = int(line.split(":")[1].strip())
 
-                for element in result["zones"]:
-                    if element.name == n1:
-                        element.connections.append(n2)
-                    elif element.name == n2:
-                        element.connections.append(n1)
+    # ВТОРОЙ ПРОХОД: Устанавливаем связи объектами
+    # ВТОРОЙ ПРОХОД: Устанавливаем связи объектами (только в одну сторону)
+    for line in lines:
+        line = line.strip()
+        if line.startswith("connection"):
+            data = line.split(":", 1)[1].strip()
+            names_part = data.split("[")[0].strip()
+            n1, n2 = [n.strip() for n in names_part.split("-")]
+
+            zone1 = zones_by_name.get(n1)
+            zone2 = zones_by_name.get(n2)
+
+            if zone1 and zone2:
+                # Добавляем ТОЛЬКО связь от первой ко второй
+                # Теперь из n1 можно попасть в n2, но не наоборот
+                zone1.connections.append(zone2)
     return result

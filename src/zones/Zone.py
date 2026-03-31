@@ -19,4 +19,8 @@ class Zone():
         self.link_capacity = link_capacity
         self.current_drones = []
         self.connections = []
-        print(self.name, self.x, self.y, self.type, self.color, self.drone_capacity)
+
+    def debug(self):
+        print(self.name, self.type, self.drone_capacity)
+        for c in self.connections:
+            print(f"Connections: {c}")

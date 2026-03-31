@@ -1,9 +1,8 @@
-class Mao:
+class Map:
     def __init__(self):
         self.zones = []
 
-    def add_zones(zones):
+    def add_zones(self, zones):
         for zone in zones:
-            zones.add(zone)
+            self.zones.append(zone)
 
-    
