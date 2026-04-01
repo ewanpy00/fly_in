@@ -29,26 +29,47 @@ def visualize(map, mode):
     ys = [z.y for z in map.zones]
     min_max = (min(xs), max(xs), min(ys), max(ys))
 
-    drones = []
-    if len(map.zones) >= 2:
-        drones.append(Drone(map.zones[0], get_screen_coords))
-
-    # zones_cords = []
-    i = 1
+    turn_counter = 0
+    font_turns = pygame.font.SysFont("Arial", 24, bold=True)
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    for drone in drones:
-                        if not drone.is_moving and drone.current_zone.connections:
-                            next_hop = drone.get_exit_path(map.zones)
-                            drone.get_exit_path(map.zones)
-                            drone.start_move(next_hop[i])
-                            i += 1
+            if mode:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        all_idle = all(not drone.is_moving for drone in map.drones) 
+                        if all_idle:
+                            if any(len(drone.get_exit_path() or []) > 1 for drone in map.drones):
+                                turn_counter += 1
+                                print(f"Auto Turn: {turn_counter}")
                                 
+                                for drone in map.drones:
+                                    exit_path = drone.get_exit_path()
+                                    if exit_path and len(exit_path) > 1:
+                                        next_step = exit_path[1]
+                                        if next_step.current_drones < next_step.drone_capacity:
+                                            next_step.current_drones += 1
+                                            drone.current_zone.current_drones -= 1
+                                            drone.start_move(next_step)
+        if not mode:
+            all_idle = all(not drone.is_moving for drone in map.drones)
+            
+            if all_idle:
+                if any(len(drone.get_exit_path() or []) > 1 for drone in map.drones):
+                    turn_counter += 1
+                    print(f"Auto Turn: {turn_counter}")
+                    
+                    for drone in map.drones:
+                        exit_path = drone.get_exit_path()
+                        if exit_path and len(exit_path) > 1:
+                            next_step = exit_path[1]
+                            if next_step.current_drones < next_step.drone_capacity:
+                                next_step.current_drones += 1
+                                drone.current_zone.current_drones -= 1
+                                drone.start_move(next_step)
+            
 
         screen.fill((30, 30, 30))
 
@@ -77,10 +98,10 @@ def visualize(map, mode):
                 except ValueError:
                     draw_color = pygame.Color("white")
                 pygame.draw.circle(screen, draw_color, zone_pos, 15)
-
-        for drone in drones:
-            drone.update()      # Дрон сам решит, нужно ли ему двигаться
-            drone.draw(screen, min_max)
+        
+        for drone in map.drones:
+            drone.update()
+            drone.draw(screen, min_max, get_screen_coords)
 
         if hovered_zone:
             pos = get_screen_coords(hovered_zone.x, hovered_zone.y, min_max)
@@ -92,6 +113,9 @@ def visualize(map, mode):
             bg_rect = text_rect.inflate(10, 5)
             pygame.draw.rect(screen, (50, 50, 50), bg_rect, border_radius=5)
             screen.blit(text_surface, text_rect)
+
+        turn_surf = font_turns.render(f"Total Turns: {turn_counter}", True, (0, 255, 0))
+        screen.blit(turn_surf, (20, 20))
 
         pygame.display.flip()
         clock.tick(60)

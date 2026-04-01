@@ -34,6 +34,8 @@ def process_zones(line):
     elif key == "zone":
         type = value
 
+    if "goal" in name:
+        drone_capacity = 100
     return Zone(name, x, y, type, color, drone_capacity, link_capacity)
 
 

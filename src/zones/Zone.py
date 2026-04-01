@@ -15,9 +15,9 @@ class Zone():
         self.y = y
         self.type = type
         self.color = color
-        self.drone_capacity = drone_capacity
+        self.drone_capacity = int(drone_capacity)
         self.link_capacity = link_capacity
-        self.current_drones = []
+        self.current_drones = 0
         self.connections = []
 
     def debug(self):
