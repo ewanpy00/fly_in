@@ -31,7 +31,7 @@ def visualize(map, mode):
 
     turn_counter = 0
     font_turns = pygame.font.SysFont("Arial", 24, bold=True)
-    running = True
+    running = True 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -39,12 +39,11 @@ def visualize(map, mode):
             if mode:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        all_idle = all(not drone.is_moving for drone in map.drones) 
+                        all_idle = all(not drone.is_moving for drone in map.drones)
                         if all_idle:
                             if any(len(drone.get_exit_path() or []) > 1 for drone in map.drones):
                                 turn_counter += 1
-                                print(f"Auto Turn: {turn_counter}")
-                                
+                                print(f"[LOG] Turn: {turn_counter}")
                                 for drone in map.drones:
                                     exit_path = drone.get_exit_path()
                                     if exit_path and len(exit_path) > 1:
@@ -55,12 +54,10 @@ def visualize(map, mode):
                                             drone.start_move(next_step)
         if not mode:
             all_idle = all(not drone.is_moving for drone in map.drones)
-            
             if all_idle:
                 if any(len(drone.get_exit_path() or []) > 1 for drone in map.drones):
                     turn_counter += 1
-                    print(f"Auto Turn: {turn_counter}")
-                    
+                    print(f"[LOG] Turn: {turn_counter}")
                     for drone in map.drones:
                         exit_path = drone.get_exit_path()
                         if exit_path and len(exit_path) > 1:
@@ -69,7 +66,6 @@ def visualize(map, mode):
                                 next_step.current_drones += 1
                                 drone.current_zone.current_drones -= 1
                                 drone.start_move(next_step)
-            
 
         screen.fill((30, 30, 30))
 
