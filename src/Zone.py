@@ -17,6 +17,7 @@ class Zone():
         self.color = color
         self.drone_capacity = int(drone_capacity)
         self.link_capacity = link_capacity
+        print(link_capacity)
         self.current_drones = 0
         self.connections = []
 

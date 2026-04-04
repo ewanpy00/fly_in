@@ -3,25 +3,65 @@ from src.Drone import Drone
 from src.Map import Map
 from parser import config
 from src.display import display
+import argparse
+from enum import Enum
+
+from enum import IntEnum
+
+class SpeedLevel(IntEnum):
+    VERY_SLOW = 1
+    SLOW = 2
+    NORMAL = 3
+    FAST = 4
+    TURBO = 5
+
+    @property
+    def factor(self):
+        mapping = {
+            SpeedLevel.VERY_SLOW: 0.005,
+            SpeedLevel.SLOW:      0.01,
+            SpeedLevel.NORMAL:    0.02,
+            SpeedLevel.FAST:      0.04,
+            SpeedLevel.TURBO:     0.06
+        }
+        return mapping[self]
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Fly-in drone simulation")
+    parser.add_argument("-d", "--debug", action="store_true", help="Launch the program in a debug mdoe")
+    parser.add_argument("-s", "--speed", type=int, default=3, choices=[1, 2, 3, 4, 5], help="Drones speed (from 1 to 5). By default: 3")
+    parser.add_argument("map_path", type=str, help="Path to the map file")
+
+    return parser.parse_args()
 
 def fly_in():
-        print()
-        map = Map()
-        mode = False #read from the terminal
         try:
-            print("[LOG] Processing all the configurations")
-            configuratoin = config.get_config("maps/custom_map.txt")
-            zones_conf = configuratoin["zones"]
-            drones_amount = configuratoin["nb_drones"]
-            map.add_zones(zones_conf)
-            for i in range(drones_amount):
-                map.add_drone(Drone(zones_conf[0], mode, i+1))
-            display.visualize(map, mode)
-        except ConfigError as e: #Catch Programm error that will be parent class for ConfigError and Processing error (OR I DONT EVEN NEED PROCESSING ERROR)
-             print("[LOG] Configuration process failed")
-             print(e)
-        print("[LOG] Configuration completed successfully")
-        print("[LOG] Running the program")
+            print()
+            args = parse_args()
+            path = args.map_path
+            mode = args.debug
+            drone_speed_arg = SpeedLevel(args.speed)
+            drone_speed = drone_speed_arg.factor
+            map = Map()
+
+            try:
+                print("[LOG] Processing all the configurations")
+                configuratoin = config.get_config(path)
+                zones_conf = configuratoin["zones"]
+                drones_amount = configuratoin["nb_drones"]
+                map.add_zones(zones_conf)
+                for i in range(drones_amount):
+                    map.add_drone(Drone(zones_conf[0], mode, i+1, drone_speed))
+                print("[LOG] Map Successfully created")
+                display.visualize(map, mode)
+                print("\nProgram finished without any errors")
+            except ConfigError as e:
+                print("[LOG] Configuration process failed")
+                print(e)
+        except Exception as e:
+            print("An unknown error occurred. ", end="")
+            print("Please check your configuration against the README.\n", e)
 
 if __name__ == "__main__":
     fly_in()

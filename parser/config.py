@@ -1,5 +1,5 @@
 from utils.exceptions import DroneValueError, ZoneFormatError, ZoneValueError, ConfigError
-from src.zones.Zone import Zone
+from src.Zone import Zone
 
 import os
 
@@ -47,6 +47,7 @@ def process_zones(line):
             )
 
     metadata = read_metadata(line)
+    print(metadata)
     color = metadata.get("color", "grey")
     z_kind = metadata.get("zone", "normal")
     
@@ -72,11 +73,11 @@ def get_config(map_path):
         raise ConfigError(f"Invalid file path: {map_path}")
 
     result = {"nb_drones": 0, "zones": []}
-    zones_by_name = {}
-    
+    zones_by_name = {} #?
+
     try:
         with open(map_path, "r") as f:
-            lines = [l.strip() for l in f if l.strip()]
+            lines = [l.strip() for l in f if l.strip()] #???
 
         for line in lines:
             if line.startswith("nb_drone"):
@@ -86,9 +87,9 @@ def get_config(map_path):
                         )
                 try:
                     val = int(line.split(":")[1].strip())
-                    if val <= 0:
+                    if val <= 0 or val > 100:
                         raise DroneValueError(
-                            f"Amount of drones should be positive: {val}"
+                            f"Amount of drones should be in range from 0 to 100: {val}"
                             )
                     result["nb_drones"] = val
                 except ValueError:
@@ -114,10 +115,10 @@ def get_config(map_path):
                     raise ZoneFormatError(
                         f"Invalid connection format: {line}"
                         )
-                
+
                 data = line.split(":", 1)[1].strip()
                 names_part = data.split("[")[0].strip()
-                
+
                 try:
                     n1, n2 = [n.strip() for n in names_part.split("-")]
                 except ValueError:
@@ -131,7 +132,7 @@ def get_config(map_path):
                     raise ZoneValueError(
                         f"Attemp to connect not existing Zone: {missing}"
                         )
-                
+
                 z1.connections.append(z2)
 
     except IOError as e:

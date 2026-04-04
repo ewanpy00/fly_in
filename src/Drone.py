@@ -3,12 +3,12 @@ from collections import deque
 import pygame
 
 class Drone:
-    def __init__(self, start_zone, mode, name):
+    def __init__(self, start_zone, mode, name, speed):
         self.drone_name = name
         self.current_zone = start_zone
         self.target_zone = None 
         self.progress = 0.0
-        self.speed = 0.02
+        self.speed = speed
         self.is_moving = False
         self.exit_path = []
         self.debug_mode = mode
@@ -26,6 +26,7 @@ class Drone:
         if self.is_moving and self.target_zone:
             self.progress += self.speed
             if self.progress >= 1.0:
+                print(f"[LOG] Drone {self.drone_name} moved from the {self.current_zone.name} to the {self.target_zone.name}")
                 self.current_zone = self.target_zone
                 self.target_zone = None
                 self.progress = 0.0
