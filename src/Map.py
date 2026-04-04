@@ -1,5 +1,3 @@
-from src.Drone import Drone
-
 class Map:
     def __init__(self):
         self.zones = []
