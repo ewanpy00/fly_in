@@ -1,20 +1,11 @@
-from enum import Enum
-
-
-class ZoneType(Enum):
-    NORMAL = "normal"
-    RESTRICTED = "restricted"
-    PRIORITY = "priority"
-    BLOCKED = "blocked"
-
-
 class Zone():
-    def __init__(self, name, x, y, type, color, drone_capacity):
+    def __init__(self, name, x, y, type, color, drone_capacity, title):
         self.name = name
         self.x = x
         self.y = y
         self.type = type
         self.color = color
+        self.title = title
         self.drone_capacity = int(drone_capacity)
         self.current_drones = 0
         self.connections = {}

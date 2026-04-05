@@ -1,3 +1,4 @@
+from utils.ZoneType import ZoneType
 import utils. exceptions as e
 from src.Zone import Zone
 import os
@@ -28,7 +29,7 @@ def process_zones(line):
     if ":" not in line:
         raise e.ZoneFormatError(f" ':' symbol is missing {line}")
 
-    rest = line.split(":", 1)[1]
+    title, rest = line.split(":", 1)
     main_data = rest.split('[')[0].strip()
     p = main_data.split()
 
@@ -48,7 +49,7 @@ def process_zones(line):
 
     metadata = read_metadata(line)
     color = metadata.get("color", "grey")
-    z_kind = metadata.get("zone", "normal")
+    z_type = metadata.get("zone", "normal")
 
     try:
         raw_cap = metadata.get("drone_capacity", 1)
@@ -62,10 +63,15 @@ def process_zones(line):
             f"An amount of drones should be integer value: {raw_cap}"
             )
 
-    if "goal" in name or z_kind == "end_hub":
+    if "end_hub" in title:
         drone_capacity = 100
 
-    return Zone(name, x, y, z_kind, color, drone_capacity)
+    try:
+        zone_type = ZoneType(z_type)
+    except ValueError:
+        zone_type = ZoneType.NORMAL
+
+    return Zone(name, x, y, zone_type, color, drone_capacity, title)
 
 
 def get_config(map_path):

@@ -27,7 +27,7 @@ def parse_args():
 
 
 def fly_in():
-    try:
+    # try:
         print()
         args = parse_args()
         path = args.map_path
@@ -50,9 +50,9 @@ def fly_in():
         except ConfigError as e:
             print("[LOG] Configuration process failed")
             print(e)
-    except Exception as e:
-        print("An unknown error occurred. ", end="")
-        print("Please check your configuration against the README.\n", e)
+    # except Exception as e:
+    #     print("An unknown error occurred. ", end="")
+    #     print("Please check your configuration against the README.\n", e)
 
 
 if __name__ == "__main__":

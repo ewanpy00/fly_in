@@ -1,3 +1,4 @@
+from utils.ZoneType import ZoneType
 import heapq
 import pygame
 
@@ -28,7 +29,10 @@ class Drone:
 
     def update(self):
         if self.is_moving and self.target_zone:
-            self.progress += self.speed
+            if self.target_zone.type == ZoneType.RESTRICTED:
+                self.progress += self.speed / 2
+            else:
+                self.progress += self.speed
             if self.progress >= 1.0:
                 self.current_zone.connections[self.target_zone] += 1
                 print(
@@ -90,17 +94,22 @@ class Drone:
             current_complexity, _, path = heapq.heappop(queue)
             current_zone = path[-1]
 
-            if "goal" in current_zone.name or current_zone.type == "end_hub":
+            if current_zone.title == "end_hub":
                 return path
+
             for neighbor in current_zone.connections:
-                if neighbor.type == "blocked":
+                if neighbor.type == ZoneType.BLOCKED:
                     continue
-                num_drones = neighbor.current_drones
-                step_complexity = 1 + (num_drones * 1)
+
+                base_cost = neighbor.type.cost
+                traffic_penalty = neighbor.current_drones * 1
+                
+                step_complexity = base_cost + traffic_penalty
                 new_total_complexity = current_complexity + step_complexity
 
                 if neighbor.name not in visited_costs or \
                         new_total_complexity < visited_costs[neighbor.name]:
+
                     visited_costs[neighbor.name] = new_total_complexity
                     new_path = list(path)
                     new_path.append(neighbor)
@@ -109,5 +118,4 @@ class Drone:
                     heapq.heappush(queue, (new_total_complexity,
                                            count,
                                            new_path))
-
         return None
