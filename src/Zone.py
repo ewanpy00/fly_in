@@ -9,6 +9,7 @@ class Zone():
         self.drone_capacity = int(drone_capacity)
         self.current_drones = 0
         self.connections = {}
+        self.is_visible = True
 
     def debug(self):
         print(self.name, self.type, self.drone_capacity)

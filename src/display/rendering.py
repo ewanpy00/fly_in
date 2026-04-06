@@ -14,22 +14,23 @@ def draw_zones(screen, map_obj, min_max, mouse_p):
     from src.display.display import get_screen_coords
     hovered_zone = None
     for zone in map_obj.zones:
-        zone_p = get_screen_coords(zone.x, zone.y, min_max)
-        dist = ((zone_p[0] - mouse_p[0])**2 + (zone_p[1] - mouse_p[1])**2)**0.5
+        if zone.is_visible is True:
+            zone_p = get_screen_coords(zone.x, zone.y, min_max)
+            dist = ((zone_p[0] - mouse_p[0])**2 + (zone_p[1] - mouse_p[1])**2)**0.5
 
-        color = getattr(zone, 'color', "white")
-        radius = 15
+            color = getattr(zone, 'color', "white")
+            radius = 15
 
-        if dist < radius:
-            draw_color = pygame.Color("white")
-            pygame.draw.circle(screen, draw_color, zone_p, radius + 3)
-            hovered_zone = zone
-        else:
-            try:
-                draw_color = pygame.Color(color)
-            except ValueError:
+            if dist < radius:
                 draw_color = pygame.Color("white")
-            pygame.draw.circle(screen, draw_color, zone_p, radius)
+                pygame.draw.circle(screen, draw_color, zone_p, radius + 3)
+                hovered_zone = zone
+            else:
+                try:
+                    draw_color = pygame.Color(color)
+                except ValueError:
+                    draw_color = pygame.Color("white")
+                pygame.draw.circle(screen, draw_color, zone_p, radius)
 
     return hovered_zone
 

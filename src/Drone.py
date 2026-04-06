@@ -13,6 +13,7 @@ class Drone:
         self.is_moving = False
         self.exit_path = []
         self.debug_mode = mode
+        self.delay = 0
 
     def start_move(self, destination):
         if not self.is_moving:
@@ -102,9 +103,9 @@ class Drone:
                     continue
 
                 base_cost = neighbor.type.cost
-                traffic_penalty = neighbor.current_drones * 1
+                # traffic_penalty = neighbor.current_drones * 1
                 
-                step_complexity = base_cost + traffic_penalty
+                step_complexity = base_cost
                 new_total_complexity = current_complexity + step_complexity
 
                 if neighbor.name not in visited_costs or \

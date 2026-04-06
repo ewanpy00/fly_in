@@ -40,8 +40,8 @@ def process_zones(line):
 
     name = p[0]
     try:
-        x = int(p[1])
-        y = int(p[2])
+        x = float(p[1])
+        y = float(p[2])
     except ValueError:
         raise e.ZoneValueError(
             f"Zone coords should be in value: '{name}': {p[1]}, {p[2]}"
@@ -151,7 +151,43 @@ def get_config(map_path):
                     raise ConnectionError(
                         f"max_link_capacity should be 0 to 10: {link_cap}"
                         )
-                z1.connections[z2] = link_cap
+                target_restricted = None
+                start_zone = None
+                
+                if z2.type == ZoneType.RESTRICTED:
+                    target_restricted = z2
+                    start_zone = z1
+                elif z1.type == ZoneType.RESTRICTED:
+                    target_restricted = z1
+                    start_zone = z2
+
+                if target_restricted:
+                    target_restricted.type = ZoneType.NORMAL 
+                    
+                    mid_x = (z1.x + z2.x) / 2
+                    mid_y = (z1.y + z2.y) / 2
+                    mid_name = f"buffer_{z1.name}_{z2.name}"
+                    
+                    buffer_zone = Zone(
+                        name=mid_name,
+                        x=mid_x,
+                        y=mid_y,
+                        type=ZoneType.NORMAL,
+                        color="yellow",
+                        drone_capacity=link_cap,
+                        title="common_buffer"
+                    )
+                    
+                    buffer_zone.is_visible = False
+                    result["zones"].append(buffer_zone)
+                    zones_by_name[mid_name] = buffer_zone
+
+                    z1.connections[buffer_zone] = link_cap
+                    buffer_zone.connections[z2] = link_cap
+                    
+                    print(f"[MAP FIX] Restricted zone {target_restricted.name} bypassed via {mid_name}")
+                else:
+                    z1.connections[z2] = link_cap
 
     except IOError as exc:
         raise e.ConfigError(f"Error with reading file: {exc}")
