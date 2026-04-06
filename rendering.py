@@ -1,8 +1,16 @@
+from __future__ import annotations
 import pygame
+from typing import Tuple, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Map import Map
+    from Zone import Zone
 
 
-def draw_connections(screen, map_obj, min_max):
-    from src.display.display import get_screen_coords
+def draw_connections(screen: pygame.Surface,
+                     map_obj: Map,
+                     min_max: Tuple[float, float, float, float]) -> None:
+    from display import get_screen_coords
     for zone in map_obj.zones:
         start_pos = get_screen_coords(zone.x, zone.y, min_max)
         for neighbor in zone.connections:
@@ -10,16 +18,21 @@ def draw_connections(screen, map_obj, min_max):
             pygame.draw.line(screen, (100, 100, 100), start_pos, end_pos, 2)
 
 
-def draw_zones(screen, map_obj, min_max, mouse_p):
-    from src.display.display import get_screen_coords
-    hovered_zone = None
+def draw_zones(screen: pygame.Surface,
+               map_obj: Map,
+               min_max: Tuple[float, float, float, float],
+               mouse_p: Tuple[int, int]) -> Optional[Zone]:
+    from display import get_screen_coords
+    hovered_zone: Optional[Zone] = None
     for zone in map_obj.zones:
         if zone.is_visible is True:
             zone_p = get_screen_coords(zone.x, zone.y, min_max)
-            dist = ((zone_p[0] - mouse_p[0])**2 + (zone_p[1] - mouse_p[1])**2)**0.5
+            zp_mp0 = float(zone_p[0] - mouse_p[0])
+            zp_mp1 = float(zone_p[1] - mouse_p[1])
+            dist = (zp_mp0**2 + zp_mp1**2)**0.5
 
-            color = getattr(zone, 'color', "white")
-            radius = 15
+            color: str = getattr(zone, 'color', "white")
+            radius: int = 15
 
             if dist < radius:
                 draw_color = pygame.Color("white")
@@ -35,8 +48,10 @@ def draw_zones(screen, map_obj, min_max, mouse_p):
     return hovered_zone
 
 
-def draw_tooltip(screen, zone, min_max):
-    from src.display.display import get_screen_coords
+def draw_tooltip(screen: pygame.Surface,
+                 zone: Zone,
+                 min_max: Tuple[float, float, float, float]) -> None:
+    from display import get_screen_coords
     pos = get_screen_coords(zone.x, zone.y, min_max)
     font = pygame.font.SysFont("Arial", 18, bold=True)
 
@@ -57,13 +72,13 @@ def draw_tooltip(screen, zone, min_max):
     screen.blit(text_surf, text_rect)
 
 
-def draw_ui_counter(screen, turn_counter, font):
+def draw_ui_counter(screen: pygame.Surface,
+                    turn_counter: int,
+                    font: pygame.font.Font) -> None:
     text_str = f"Total Turns: {turn_counter}"
     turn_surf = font.render(text_str, True, (0, 255, 0))
-
     text_pos = (25, 20)
 
     shadow_surf = font.render(text_str, True, (0, 50, 0))
     screen.blit(shadow_surf, (text_pos[0] + 2, text_pos[1] + 2))
-
     screen.blit(turn_surf, text_pos)

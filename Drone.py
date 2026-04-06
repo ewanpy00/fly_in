@@ -1,21 +1,26 @@
-from utils.ZoneType import ZoneType
+from typing import List, Optional, Tuple, Dict, Any, Callable
+from ZoneType import ZoneType
 import heapq
 import pygame
 
 
 class Drone:
-    def __init__(self, start_zone, mode, name, speed):
-        self.drone_name = name
-        self.current_zone = start_zone
-        self.target_zone = None
-        self.progress = 0.0
-        self.speed = speed
-        self.is_moving = False
-        self.exit_path = []
-        self.debug_mode = mode
-        self.delay = 0
+    def __init__(self,
+                 start_zone: Any,
+                 mode: bool,
+                 name: int,
+                 speed: float) -> None:
+        self.drone_name: int = name
+        self.current_zone: Any = start_zone
+        self.target_zone: Optional[Any] = None
+        self.progress: float = 0.0
+        self.speed: float = speed
+        self.is_moving: bool = False
+        self.exit_path: List[Any] = []
+        self.debug_mode: bool = mode
+        self.delay: int = 0
 
-    def start_move(self, destination):
+    def start_move(self, destination: Optional[Any]) -> None:
         if not self.is_moving:
             if destination:
                 if self.current_zone.connections[destination] > 0:
@@ -28,23 +33,19 @@ class Drone:
             if not self.debug_mode and destination:
                 self.target_zone = destination
 
-    def update(self):
+    def update(self) -> int:
         if self.is_moving and self.target_zone:
             if self.target_zone.type == ZoneType.RESTRICTED:
                 self.progress += self.speed / 2
             else:
                 self.progress += self.speed
+
             if self.progress >= 1.0:
                 self.current_zone.connections[self.target_zone] += 1
-                print(
-                    f"[LOG] Drone {self.drone_name} ", end=""
-                    )
-                print(
-                    f"moved from the {self.current_zone.name}", end=""
-                    )
-                print(
-                    f" to the {self.target_zone.name}"
-                    )
+                print(f"[LOG] Drone {self.drone_name} ", end="")
+                print(f"moved from the {self.current_zone.name}", end="")
+                print(f" to the {self.target_zone.name}")
+
                 self.current_zone = self.target_zone
                 self.target_zone = None
                 self.progress = 0.0
@@ -52,18 +53,23 @@ class Drone:
                 return 1
         return 0
 
-    def get_current_world_pos(self):
+    def get_current_world_pos(self) -> Tuple[float, float]:
         if not self.is_moving or self.target_zone is None:
-            return self.current_zone.x, self.current_zone.y
+            return float(self.current_zone.x), float(self.current_zone.y)
 
-        d_x = self.target_zone.x - self.current_zone.x
-        d_y = self.target_zone.y - self.current_zone.y
+        d_x: float = self.target_zone.x - self.current_zone.x
+        d_y: float = self.target_zone.y - self.current_zone.y
 
-        c_x = self.current_zone.x + d_x * self.progress
-        c_y = self.current_zone.y + d_y * self.progress
+        c_x: float = self.current_zone.x + d_x * self.progress
+        c_y: float = self.current_zone.y + d_y * self.progress
         return c_x, c_y
 
-    def draw(self, screen, min_max, screen_cords):
+    def draw(self,
+             screen: pygame.Surface,
+             min_max: Any,
+             screen_cords: Callable[[float, float, Any], Tuple[int, int]]
+             ) -> None:
+
         wx, wy = self.get_current_world_pos()
 
         if 0.06 <= self.progress <= 0.94:
@@ -83,17 +89,17 @@ class Drone:
 
             screen.blit(text_surface, text_rect)
 
-    def get_exit_path(self):
-        start_node = self.current_zone
-        queue = []
-        count = 0
+    def get_exit_path(self) -> Optional[List[Any]]:
+        start_node: Any = self.current_zone
+        queue: List[Tuple[int, int, List[Any]]] = []
+        count: int = 0
 
         heapq.heappush(queue, (0, count, [start_node]))
-        visited_costs = {start_node.name: 0}
+        visited_costs: Dict[str, int] = {start_node.name: 0}
 
         while queue:
             current_complexity, _, path = heapq.heappop(queue)
-            current_zone = path[-1]
+            current_zone: Any = path[-1]
 
             if current_zone.title == "end_hub":
                 return path
@@ -103,8 +109,6 @@ class Drone:
                     continue
 
                 base_cost = neighbor.type.cost
-                # traffic_penalty = neighbor.current_drones * 1
-                
                 step_complexity = base_cost
                 new_total_complexity = current_complexity + step_complexity
 

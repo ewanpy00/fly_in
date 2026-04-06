@@ -1,3 +1,4 @@
+from typing import Dict
 from enum import IntEnum
 
 
@@ -9,8 +10,8 @@ class SpeedLevel(IntEnum):
     TURBO = 5
 
     @property
-    def factor(self):
-        mapping = {
+    def factor(self) -> float:
+        mapping: Dict[SpeedLevel, float] = {
             SpeedLevel.VERY_SLOW: 0.005,
             SpeedLevel.SLOW:      0.01,
             SpeedLevel.NORMAL:    0.02,

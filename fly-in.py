@@ -1,13 +1,13 @@
-from utils.exceptions import ConfigError
-from src.Drone import Drone
-from src.Map import Map
-from parser import config
-from src.display import display
+from exceptions import ConfigError
+from Drone import Drone
+from Map import Map
+import config
+import display
 import argparse
-from utils.SpeedLevel import SpeedLevel
+from SpeedLevel import SpeedLevel
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Fly-in drone simulation")
     parser.add_argument("-d",
                         "--debug",
@@ -26,8 +26,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def fly_in():
-    # try:
+def fly_in() -> None:
+    try:
         print()
         args = parse_args()
         path = args.map_path
@@ -50,9 +50,9 @@ def fly_in():
         except ConfigError as e:
             print("[LOG] Configuration process failed")
             print(e)
-    # except Exception as e:
-    #     print("An unknown error occurred. ", end="")
-    #     print("Please check your configuration against the README.\n", e)
+    except Exception as e:
+        print("An unknown error occurred. ", end="")
+        print("Please check your configuration against the README.\n", e)
 
 
 if __name__ == "__main__":

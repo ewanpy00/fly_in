@@ -1,10 +1,11 @@
-from utils.ZoneType import ZoneType
-import utils. exceptions as e
-from src.Zone import Zone
+from ZoneType import ZoneType
+import exceptions as e
+from Zone import Zone
 import os
+from typing import Dict, Any
 
 
-def read_metadata(line):
+def read_metadata(line: str) -> Dict[str, Any]:
     if '[' not in line or ']' not in line:
         return {}
 
@@ -25,7 +26,7 @@ def read_metadata(line):
             )
 
 
-def process_zones(line):
+def process_zones(line: str) -> Zone:
     if ":" not in line:
         raise e.ZoneFormatError(f" ':' symbol is missing {line}")
 
@@ -74,11 +75,11 @@ def process_zones(line):
     return Zone(name, x, y, zone_type, color, drone_capacity, title)
 
 
-def get_config(map_path):
+def get_config(map_path: str) -> Dict[str, Any]:
     if not os.path.exists(map_path):
         raise e.ConfigError(f"Invalid file path: {map_path}")
 
-    result = {"nb_drones": 0, "zones": []}
+    result: Dict[str, Any] = {"nb_drones": 0, "zones": []}
     zones_by_name = {}
 
     try:
@@ -103,7 +104,7 @@ def get_config(map_path):
                         "Amount of drones should be integer Value."
                         )
 
-            elif "hub" in line:
+            elif "hub:" in line:
                 zone_obj = process_zones(line)
                 if zone_obj.name in zones_by_name:
                     raise e.ZoneValueError(
@@ -152,22 +153,19 @@ def get_config(map_path):
                         f"max_link_capacity should be 0 to 10: {link_cap}"
                         )
                 target_restricted = None
-                start_zone = None
-                
+
                 if z2.type == ZoneType.RESTRICTED:
                     target_restricted = z2
-                    start_zone = z1
                 elif z1.type == ZoneType.RESTRICTED:
                     target_restricted = z1
-                    start_zone = z2
 
                 if target_restricted:
-                    target_restricted.type = ZoneType.NORMAL 
-                    
+                    target_restricted.type = ZoneType.NORMAL
+
                     mid_x = (z1.x + z2.x) / 2
                     mid_y = (z1.y + z2.y) / 2
                     mid_name = f"buffer_{z1.name}_{z2.name}"
-                    
+
                     buffer_zone = Zone(
                         name=mid_name,
                         x=mid_x,
@@ -177,15 +175,13 @@ def get_config(map_path):
                         drone_capacity=link_cap,
                         title="common_buffer"
                     )
-                    
+
                     buffer_zone.is_visible = False
                     result["zones"].append(buffer_zone)
                     zones_by_name[mid_name] = buffer_zone
 
                     z1.connections[buffer_zone] = link_cap
                     buffer_zone.connections[z2] = link_cap
-                    
-                    print(f"[MAP FIX] Restricted zone {target_restricted.name} bypassed via {mid_name}")
                 else:
                     z1.connections[z2] = link_cap
 

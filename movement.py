@@ -1,12 +1,19 @@
-def process_drones_step(map, turn_counter):
-    all_idle = all(not drone.is_moving for drone in map.drones)
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from Map import Map
+
+
+def process_drones_step(map_obj: Map, turn_counter: int) -> int:
+    all_idle = all(not drone.is_moving for drone in map_obj.drones)
 
     if all_idle:
-        if any(len(drone.get_exit_path() or []) > 1 for drone in map.drones):
+        if any(len(d.get_exit_path() or []) > 1 for d in map_obj.drones):
             turn_counter += 1
             print(f"[LOG] Turn: {turn_counter}")
 
-            for drone in map.drones:
+            for drone in map_obj.drones:
                 exit_path = drone.get_exit_path()
                 if exit_path and len(exit_path) > 1:
                     next_step = exit_path[1]

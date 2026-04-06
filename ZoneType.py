@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Dict
 
 
 class ZoneType(Enum):
@@ -8,10 +9,10 @@ class ZoneType(Enum):
     BLOCKED = "blocked"
 
     @property
-    def cost(self):
-        mapping = {
-            ZoneType.NORMAL: 1,
-            ZoneType.RESTRICTED: 2,
+    def cost(self) -> float:
+        mapping: Dict[ZoneType, float] = {
+            ZoneType.NORMAL: 1.0,
+            ZoneType.RESTRICTED: 2.0,
             ZoneType.PRIORITY: 0.5,
             ZoneType.BLOCKED: float('inf')
         }

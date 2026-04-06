@@ -1,16 +1,25 @@
-from src.display.movement import process_drones_step
-from src.display import rendering as r
+from __future__ import annotations
 import pygame
+import rendering as r
+from typing import Tuple, List, TYPE_CHECKING
+from movement import process_drones_step
 
-WIDTH, HEIGHT = 800, 600
-OFFSET = 70
+if TYPE_CHECKING:
+    from Map import Map
+
+WIDTH: int = 800
+HEIGHT: int = 600
+OFFSET: int = 70
 
 
-def get_screen_coords(x, y, min_max):
+def get_screen_coords(x: float,
+                      y: float,
+                      min_max: Tuple[float, float, float, float]
+                      ) -> Tuple[int, int]:
     min_x, max_x, min_y, max_y = min_max
 
-    range_x = (max_x - min_x) if max_x != min_x else 1
-    range_y = (max_y - min_y) if max_y != min_y else 1
+    range_x = (max_x - min_x) if max_x != min_x else 1.0
+    range_y = (max_y - min_y) if max_y != min_y else 1.0
 
     scale_x = (WIDTH - 2 * OFFSET) / range_x
     scale_y = (HEIGHT - 2 * OFFSET) / range_y
@@ -20,21 +29,22 @@ def get_screen_coords(x, y, min_max):
     return int(screen_x), int(screen_y)
 
 
-def visualize(map_obj, mode):
+def visualize(map_obj: Map, mode: bool) -> None:
     pygame.init()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    screen: pygame.Surface = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Fly-in Map Visualization")
-    clock = pygame.time.Clock()
+    clock: pygame.time.Clock = pygame.time.Clock()
 
-    xs, ys = [z.x for z in map_obj.zones], [z.y for z in map_obj.zones]
+    xs: List[float] = [float(z.x) for z in map_obj.zones]
+    ys: List[float] = [float(z.y) for z in map_obj.zones]
     min_max = (min(xs), max(xs), min(ys), max(ys))
 
-    turn_counter = 0
-    font_turns = pygame.font.SysFont("Arial", 24, bold=True)
-    running = True
+    turn_counter: int = 0
+    font_turns: pygame.font.Font = pygame.font.SysFont("Arial", 24, bold=True)
+    running: bool = True
 
     while running:
-        mouse_pos = pygame.mouse.get_pos()
+        mouse_pos: Tuple[int, int] = pygame.mouse.get_pos()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -55,6 +65,7 @@ def visualize(map_obj, mode):
 
         for drone in map_obj.drones:
             drone.draw(screen, min_max, get_screen_coords)
+
         if hovered_zone:
             r.draw_tooltip(screen, hovered_zone, min_max)
 
