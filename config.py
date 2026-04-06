@@ -31,6 +31,10 @@ def process_zones(line: str) -> Zone:
         raise e.ZoneFormatError(f" ':' symbol is missing {line}")
 
     title, rest = line.split(":", 1)
+    if ":" in rest:
+        raise e.ZoneFormatError(
+            f"Zone name can not contain ':' symbol"
+            )
     main_data = rest.split('[')[0].strip()
     p = main_data.split()
 
@@ -141,7 +145,6 @@ def get_config(map_path: str) -> Dict[str, Any]:
                     raise e.ZoneValueError(
                         f"Attempt to connect non-existing Zone: {missing}"
                         )
-
                 try:
                     meta_data = read_metadata(line)
                     link_cap = int(meta_data.get("max_link_capacity", 8))

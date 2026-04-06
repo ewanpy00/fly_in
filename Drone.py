@@ -42,9 +42,11 @@ class Drone:
 
             if self.progress >= 1.0:
                 self.current_zone.connections[self.target_zone] += 1
-                print(f"[LOG] Drone {self.drone_name} ", end="")
-                print(f"moved from the {self.current_zone.name}", end="")
-                print(f" to the {self.target_zone.name}")
+                if self.target_zone.title == "common_buffer":
+                    target_conn_zone = next(iter(self.target_zone.connections))
+                    print(f"{self.drone_name}-connection_{target_conn_zone.name} ", end="")
+                else:
+                    print(f"{self.drone_name}-{self.target_zone.name} ", end="")
 
                 self.current_zone = self.target_zone
                 self.target_zone = None

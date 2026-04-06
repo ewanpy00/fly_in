@@ -11,7 +11,7 @@ def process_drones_step(map_obj: Map, turn_counter: int) -> int:
     if all_idle:
         if any(len(d.get_exit_path() or []) > 1 for d in map_obj.drones):
             turn_counter += 1
-            print(f"[LOG] Turn: {turn_counter}")
+            print(f"\nTurn: {turn_counter}:     ", end="")
 
             for drone in map_obj.drones:
                 exit_path = drone.get_exit_path()
