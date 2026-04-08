@@ -44,9 +44,16 @@ class Drone:
                 self.current_zone.connections[self.target_zone] += 1
                 if self.target_zone.title == "common_buffer":
                     target_conn_zone = next(iter(self.target_zone.connections))
-                    print(f"{self.drone_name}-connection_{target_conn_zone.name} ", end="")
+                    print(
+                        f"{self.drone_name}-", end=""
+                        )
+                    print(
+                        f"connection_{target_conn_zone.name} ", end=""
+                        )
                 else:
-                    print(f"{self.drone_name}-{self.target_zone.name} ", end="")
+                    print(
+                        f"{self.drone_name}-{self.target_zone.name} ", end=""
+                        )
 
                 self.current_zone = self.target_zone
                 self.target_zone = None
@@ -59,11 +66,11 @@ class Drone:
         if not self.is_moving or self.target_zone is None:
             return float(self.current_zone.x), float(self.current_zone.y)
 
-        d_x: float = self.target_zone.x - self.current_zone.x
-        d_y: float = self.target_zone.y - self.current_zone.y
+        d_x = self.target_zone.x - self.current_zone.x
+        d_y = self.target_zone.y - self.current_zone.y
 
-        c_x: float = self.current_zone.x + d_x * self.progress
-        c_y: float = self.current_zone.y + d_y * self.progress
+        c_x = self.current_zone.x + d_x * self.progress
+        c_y = self.current_zone.y + d_y * self.progress
         return c_x, c_y
 
     def draw(self,
