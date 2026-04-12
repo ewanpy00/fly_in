@@ -92,7 +92,7 @@ The Pygame-based visualization significantly enhances the User Experience:
 **Easy**
 * 01_linear_path = 4
 * 02_simple_fork = 5
-* 03_basic_capacity = 6 (can be optimized further with simultaneous starts)
+* 03_basic_capacity = 6
 
 **Medium**
 * 01_dead_end_trap = 8
@@ -116,11 +116,10 @@ References:
 Artificial Intelligence (Gemini/ChatGPT) was utilized as a technical consultant for the following tasks:
 
 * **Logic & Debugging:** Debugging the complicated logical structures.
-* **Architectural Iteration:** Refinement of the class structures and zone-handling logic (with varying degrees of success).
+* **Architectural Iteration:** Refinement of the class structures and zone-handling logic
 * **Code Quality:** Optimization of Python syntax and implementation of best practices for cleaner, more readable code.
 * **Pygame Integration:** Researching efficient rendering techniques and event-loop management.
 * **Mathematics & Mapping:** Developing the coordinate transformation logic to map configuration-file coordinates into screen pixels using linear scaling.
 
 ### Possible improvements
 * **Simultaneous drones movement** If few drones move frome the same zone in a one directoin they overlap each other
-* **Architecture problems** 

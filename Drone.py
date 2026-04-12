@@ -81,22 +81,21 @@ class Drone:
 
         wx, wy = self.get_current_world_pos()
 
-        if 0.06 <= self.progress <= 0.94:
-            screen_pos = screen_cords(wx, wy, min_max)
+        screen_pos = screen_cords(wx, wy, min_max)
 
-            pygame.draw.circle(screen, (255, 255, 0), screen_pos, 7)
-            pygame.draw.circle(screen, (0, 0, 0), screen_pos, 7, 1)
+        pygame.draw.circle(screen, (255, 255, 0), screen_pos, 7)
+        pygame.draw.circle(screen, (0, 0, 0), screen_pos, 7, 1)
 
-            font = pygame.font.SysFont("Arial", 16, bold=True)
-            text_surface = font.render(str(self.drone_name),
-                                       True,
-                                       (255, 255, 255))
-            text_rect = text_surface.get_rect(center=(screen_pos[0],
-                                                      screen_pos[1] - 15))
-            bg_rect = text_rect.inflate(4, 2)
-            pygame.draw.rect(screen, (30, 30, 30), bg_rect, border_radius=3)
+        font = pygame.font.SysFont("Arial", 16, bold=True)
+        text_surface = font.render(str(self.drone_name),
+                                   True,
+                                   (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(screen_pos[0],
+                                                  screen_pos[1] - 15))
+        bg_rect = text_rect.inflate(4, 2)
+        pygame.draw.rect(screen, (30, 30, 30), bg_rect, border_radius=3)
 
-            screen.blit(text_surface, text_rect)
+        screen.blit(text_surface, text_rect)
 
     def get_exit_path(self) -> Optional[List[Any]]:
         start_node: Any = self.current_zone
@@ -118,7 +117,7 @@ class Drone:
                     continue
 
                 base_cost = neighbor.type.cost
-                step_complexity = base_cost
+                step_complexity = base_cost + neighbor.current_drones
                 new_total_complexity = current_complexity + step_complexity
 
                 if neighbor.name not in visited_costs or \

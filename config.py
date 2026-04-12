@@ -87,7 +87,8 @@ class ConfigLoader:
             drone_capacity = int(raw_cap)
             if drone_capacity <= 0:
                 raise e.ZoneValueError(
-                    f"Cap of the Zone '{name}' must >0. Got: {drone_capacity}"
+                    f"Drone capacity of the Zone '{name}' "
+                    f"must > 0. Got: {drone_capacity}"
                     )
         except ValueError:
             raise e.ZoneValueError(
@@ -161,6 +162,8 @@ class ConfigLoader:
                 )
         for i, z1 in enumerate(zones):
             for z2 in zones[i+1:]:
+                if z1.title == "common_buffer" or z2.title == "common_buffer":
+                    continue
                 dist = math.sqrt((z1.x - z2.x)**2 + (z1.y - z2.y)**2)
                 if dist < 0.1:
                     raise e.ZoneValueError(

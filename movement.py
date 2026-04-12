@@ -28,7 +28,7 @@ class MovementSystem:
                             drone.start_move(next_step)
             else:
                 if turn_counter > 0:
-                    print("\n[INFO] Simulation completed.")
+                    print("\n[LOG] Simulation completed.")
                     return -1
 
         return turn_counter
