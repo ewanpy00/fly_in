@@ -68,7 +68,6 @@ class SimulationView:
         self.min_max = (min(xs), max(xs), min(ys), max(ys))
 
         self.turn_counter = 0
-        # Font must be created after pygame.init()
         self.font_turns: pygame.font.Font | None = None
 
     def _handle_events(self) -> bool:

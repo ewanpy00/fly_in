@@ -7,7 +7,7 @@ EXCLUDE_DIRS = env,venv,.venv,.mypy_cache,__pycache__
 MAP          ?= maps/subject_map.txt
 SPEED        ?= 3
 
-all: run
+all: install run
 
 install:
 	$(PIP) install pygame flake8 mypy

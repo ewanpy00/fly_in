@@ -120,3 +120,7 @@ Artificial Intelligence (Gemini/ChatGPT) was utilized as a technical consultant 
 * **Code Quality:** Optimization of Python syntax and implementation of best practices for cleaner, more readable code.
 * **Pygame Integration:** Researching efficient rendering techniques and event-loop management.
 * **Mathematics & Mapping:** Developing the coordinate transformation logic to map configuration-file coordinates into screen pixels using linear scaling.
+
+### Possible improvements
+* **Simultaneous drones movement** If few drones move frome the same zone in a one directoin they overlap each other
+* **Architecture problems** 

@@ -5,6 +5,7 @@ import argparse
 from SpeedLevel import SpeedLevel
 from config import ConfigLoader
 from display import SimulationView
+from typing import Optional
 
 
 class CLI:
@@ -36,8 +37,8 @@ class CLI:
         return self.parser.parse_args()
 
 
-class SimulationApp:
-    def __init__(self, config_loader: ConfigLoader | None = None) -> None:
+class Simulation:
+    def __init__(self, config_loader: Optional[ConfigLoader] = None) -> None:
         self.config_loader = config_loader or ConfigLoader()
 
     def build_map(self, map_path: str, mode: bool, speed: float) -> Map:
@@ -63,7 +64,7 @@ def fly_in() -> None:
     try:
         print()
         args = CLI().parse()
-        app = SimulationApp()
+        app = Simulation()
         try:
             app.run(args.map_path, args.debug, args.speed)
             print("\nProgram finished without any errors")
