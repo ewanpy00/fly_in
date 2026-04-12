@@ -87,7 +87,7 @@ The Pygame-based visualization significantly enhances the User Experience:
 
 ## 🏆 Performance & Benchmarks
 **Challenger**
-* The Impossible Dream = 42 turns
+* The Impossible Dream = 42 turns (with little modification) 44 (Commited version)
 
 **Easy**
 * 01_linear_path = 4
