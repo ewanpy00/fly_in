@@ -1,11 +1,14 @@
-from exceptions import ConfigError
+from __future__ import annotations
+
+import argparse
+from typing import Optional, Any
+
 from Drone import Drone
 from Map import Map
-import argparse
 from SpeedLevel import SpeedLevel
 from config import ConfigLoader
 from display import SimulationView
-from typing import Optional
+from exceptions import ConfigError
 
 
 class CLI:
@@ -41,7 +44,11 @@ class Simulation:
     def __init__(self, config_loader: Optional[ConfigLoader] = None) -> None:
         self.config_loader = config_loader or ConfigLoader()
 
-    def build_map(self, map_path: str, mode: bool, speed: float) -> Map:
+    def build_map(
+            self,
+            map_path: str,
+            mode: bool,
+            speed: float) -> tuple[Map, Any]:
         configuration = self.config_loader.load(map_path)
         zones_conf = configuration["zones"]
         drones_amount = configuration["nb_drones"]
@@ -50,31 +57,32 @@ class Simulation:
         map_obj.add_zones(zones_conf)
         for i in range(drones_amount):
             map_obj.add_drone(Drone(zones_conf[0], mode, i + 1, speed))
-        return map_obj
+        return map_obj, drones_amount
 
     def run(self, map_path: str, mode: bool, speed_level: int) -> None:
         drone_speed = SpeedLevel(speed_level).factor
         print("[LOG] Processing all the configurations")
-        map_obj = self.build_map(map_path, mode, drone_speed)
+        map_obj, drones = self.build_map(map_path, mode, drone_speed)
         print("[LOG] Map Successfully created")
         SimulationView(map_obj, mode).run()
 
 
-def fly_in() -> None:
-    try:
-        print()
-        args = CLI().parse()
-        app = Simulation()
+class FlyInApplication:
+    def run(self) -> None:
         try:
-            app.run(args.map_path, args.debug, args.speed)
-            print("\nProgram finished without any errors")
-        except ConfigError as e:
-            print("[LOG] Configuration process failed")
-            print(e)
-    except Exception as e:
-        print("An unknown error occurred. ", end="")
-        print("Please check your configuration against the README.\n", e)
+            print()
+            args = CLI().parse()
+            simulation = Simulation()
+            try:
+                simulation.run(args.map_path, args.debug, args.speed)
+                print("\nProgram finished without any errors")
+            except ConfigError as err:
+                print("[LOG] Configuration process failed")
+                print(err)
+        except Exception as err:
+            print("An unknown error occurred. ", end="")
+            print("Please check your configuration against the README.\n", err)
 
 
 if __name__ == "__main__":
-    fly_in()
+    FlyInApplication().run()

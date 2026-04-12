@@ -10,13 +10,17 @@ SPEED        ?= 3
 all: install run
 
 install:
-	$(PIP) install pygame flake8 mypy
+	$(PIP) install pygame flake8 mypy pytest
 
 run:
 	$(PYTHON) $(MAIN_SCRIPT) --speed $(SPEED) $(MAP)
 
 run-debug:
 	$(PYTHON) $(MAIN_SCRIPT) --debug --speed $(SPEED) $(MAP)
+
+debug-pdb:
+	$(PYTHON) -m pdb $(MAIN_SCRIPT) --speed $(SPEED) $(MAP)
+
 
 lint:
 	flake8 . --exclude=$(EXCLUDE_DIRS)
@@ -28,4 +32,4 @@ clean:
 	rm -rf __pycache__ .mypy_cache .pytest_cache
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 
-.PHONY: install run run-debug debug lint clean
+.PHONY: install run run-debug debug-pdb test lint clean

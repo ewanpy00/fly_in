@@ -42,13 +42,6 @@ class Viewport:
         return int(screen_x), int(screen_y)
 
 
-def get_screen_coords(x: float,
-                      y: float,
-                      min_max: Tuple[float, float, float, float]
-                      ) -> Tuple[int, int]:
-    return Viewport().screen_coords(x, y, min_max)
-
-
 class SimulationView:
     def __init__(
         self,
@@ -143,6 +136,6 @@ class SimulationView:
 
         pygame.quit()
 
-
-def visualize(map_obj: Map, mode: bool) -> None:
-    SimulationView(map_obj, mode).run()
+    @classmethod
+    def open(cls, map_obj: Map, mode: bool) -> None:
+        cls(map_obj, mode).run()

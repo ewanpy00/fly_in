@@ -10,7 +10,10 @@ class MovementSystem:
         all_idle = all(not drone.is_moving for drone in map_obj.drones)
 
         if all_idle:
-            if any(len(d.get_exit_path() or []) > 1 for d in map_obj.drones):
+            drones_with_path = [
+                d for d in map_obj.drones if len(d.get_exit_path() or []) > 1
+                ]
+            if drones_with_path:
                 turn_counter += 1
                 print(f"\nTurn: {turn_counter}:     ", end="")
 
@@ -23,8 +26,9 @@ class MovementSystem:
                             next_step.current_drones += 1
                             drone.current_zone.current_drones -= 1
                             drone.start_move(next_step)
+            else:
+                if turn_counter > 0:
+                    print("\n[INFO] Simulation completed.")
+                    return -1
+
         return turn_counter
-
-
-def process_drones_step(map_obj: Map, turn_counter: int) -> int:
-    return MovementSystem().step(map_obj, turn_counter)

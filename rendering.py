@@ -15,6 +15,7 @@ class Renderer:
             Tuple[int, int],
         ],
     ) -> None:
+        self._turn_counter = 0
         self._screen_coords = screen_coords
 
     def draw_connections(
@@ -97,44 +98,20 @@ class Renderer:
         turn_counter: int,
         font: pygame.font.Font,
     ) -> None:
-        text_str = f"Total Turns: {turn_counter}"
-        turn_surf = font.render(text_str, True, (0, 255, 0))
-        text_pos = (25, 20)
+        if turn_counter != -1:
+            text_str = f"Total Turns: {turn_counter}"
+            self._turn_counter = turn_counter
+            turn_surf = font.render(text_str, True, (0, 255, 0))
+            text_pos = (25, 20)
 
-        shadow_surf = font.render(text_str, True, (0, 50, 0))
-        screen.blit(shadow_surf, (text_pos[0] + 2, text_pos[1] + 2))
-        screen.blit(turn_surf, text_pos)
+            shadow_surf = font.render(text_str, True, (0, 50, 0))
+            screen.blit(shadow_surf, (text_pos[0] + 2, text_pos[1] + 2))
+            screen.blit(turn_surf, text_pos)
+        else:
+            text_str = f"Total Turns: {self._turn_counter}"
+            turn_surf = font.render(text_str, True, (0, 255, 0))
+            text_pos = (25, 20)
 
-
-def draw_connections(screen: pygame.Surface,
-                     map_obj: Map,
-                     min_max: Tuple[float, float, float, float]) -> None:
-    from display import get_screen_coords
-    Renderer(get_screen_coords).draw_connections(screen, map_obj, min_max)
-
-
-def draw_zones(screen: pygame.Surface,
-               map_obj: Map,
-               min_max: Tuple[float, float, float, float],
-               mouse_p: Tuple[int, int]) -> Optional[Zone]:
-    from display import get_screen_coords
-    return Renderer(get_screen_coords).draw_zones(
-        screen,
-        map_obj,
-        min_max,
-        mouse_p,
-    )
-
-
-def draw_tooltip(screen: pygame.Surface,
-                 zone: Zone,
-                 min_max: Tuple[float, float, float, float]) -> None:
-    from display import get_screen_coords
-    Renderer(get_screen_coords).draw_tooltip(screen, zone, min_max)
-
-
-def draw_ui_counter(screen: pygame.Surface,
-                    turn_counter: int,
-                    font: pygame.font.Font) -> None:
-    from display import get_screen_coords
-    Renderer(get_screen_coords).draw_ui_counter(screen, turn_counter, font)
+            shadow_surf = font.render(text_str, True, (0, 50, 0))
+            screen.blit(shadow_surf, (text_pos[0] + 2, text_pos[1] + 2))
+            screen.blit(turn_surf, text_pos)
